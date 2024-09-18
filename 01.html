@@ -1,0 +1,1034 @@
+<html><head><base href="https://hamkombat.com"><title>RabbitTheMoon</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
+  body {
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    background-color: #324a56;
+  }
+  @keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  #game-container {
+    width: 560px;
+    height: 100vh;
+    max-height: 950px;
+    background: #324a56;
+    border-radius: 30px;
+    overflow-y: auto;
+    position: relative;
+    color: #ffffff;
+    box-shadow: none;
+  }
+  #top-bar {
+    background: linear-gradient(to right, #2c2c2c, #3a3a3a);
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #444;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  #currency {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  #currency-amount {
+    font-size: 28px;
+    font-weight: bold;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    color: #4CAF50;
+  }
+  #currency-label {
+    font-size: 16px;
+    color: #ffffff;
+  }
+  #stats-bar {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px;
+    background: rgba(60, 60, 60, 0.8);
+    font-size: 12px;
+    text-align: center;
+    position: sticky;
+    top: 72px;
+    z-index: 9;
+  }
+  .stat {
+    flex: 1;
+    padding: 5px;
+  }
+  .stat-value {
+    font-weight: bold;
+    color: #4CAF50;
+  }
+  #level-bar {
+    width: 90%;
+    height: 12px;
+    background-color: #444;
+    border-radius: 6px;
+    margin: 15px auto;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+  }
+  #level-progress {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #45a049);
+    border-radius: 6px;
+    transition: width 0.3s ease;
+  }
+  #level-text {
+    text-align: center;
+    font-size: 18px;
+    margin-top: 5px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+  }
+  #tap-area {
+    width: 100%;
+    height: auto;
+    margin: -10px 0;
+    border-radius: 0;
+    box-shadow: none;
+    overflow: visible;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    transition: transform 0.1s ease-in-out;
+  }
+  #tap-area:active {
+    transform: scale(0.95);
+  }
+  #energy-bar, #referral-bar {
+    width: 90%;
+    height: 24px;
+    background-color: #444;
+    margin: 15px auto;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+    position: relative;
+  }
+  #energy-progress, #referral-progress {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #45a049);
+    transition: width 0.3s ease;
+  }
+  #energy-icon, #referral-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 20px;
+    height: 20px;
+    z-index: 1;
+  }
+  #energy-icon {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23FFFFFF"><path d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66.19-.34.05-.08.07-.12C8.48 10.94 10.42 7.54 13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15C12.96 17.55 11 21 11 21z"></path></svg>') no-repeat center center;
+    background-size: contain;
+  }
+  #referral-icon {
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23FFFFFF"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"></path></svg>') no-repeat center center;
+    background-size: contain;
+  }
+  #energy-text, #referral-text {
+    position: absolute;
+    left: 40px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    font-weight: bold;
+    color: #FFFFFF;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    z-index: 1;
+  }
+  #bottom-section {
+    background: linear-gradient(to bottom, #2a2a2a, #1e1e1e);
+    padding: 15px;
+    border-top: 2px solid #444;
+  }
+  #bottom-menu {
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0;
+  }
+  .menu-item {
+    text-align: center;
+    color: #888;
+    font-size: 24px;
+    transition: color 0.3s ease, transform 0.3s ease;
+    border: 2px solid #4CAF50;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+  }
+  .menu-item:hover {
+    background-color: rgba(76, 175, 80, 0.1);
+  }
+  .menu-item.active {
+    color: #4CAF50;
+    transform: scale(1.1);
+  }
+  #level-up {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: #4CAF50;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 24px;
+    display: none;
+    animation: fadeInOut 2s ease-in-out;
+    z-index: 1000;
+  }
+  @keyframes fadeInOut {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 1; }
+  }
+  #rtm-info, #top-players, #social-media, #daily-tasks, #energy-page, #referral-page, #connect-wallet-page {
+    display: none;
+    padding: 20px;
+    background: rgba(30, 30, 30, 0.95);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    z-index: 1000;
+  }
+  #rtm-info h2, #top-players h2, #social-media h2, #daily-tasks h2, #energy-page h2, #referral-page h2, #connect-wallet-page h2 {
+    color: #4CAF50;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  #rtm-info p {
+    margin-bottom: 15px;
+    line-height: 1.6;
+  }
+  .back-button {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    font-size: 24px;
+    color: #4CAF50;
+    cursor: pointer;
+    z-index: 10;
+  }
+  #top-players-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  #top-players-list li {
+    background: rgba(60, 60, 60, 0.5);
+    margin-bottom: 10px;
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .player-rank {
+    font-size: 24px;
+    font-weight: bold;
+    color: #4CAF50;
+    margin-right: 15px;
+  }
+  .player-name {
+    flex-grow: 1;
+  }
+  .player-score {
+    font-weight: bold;
+    color: #FFD700;
+  }
+  #social-media-list, #daily-tasks-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  #social-media-list li, #daily-tasks-list li {
+    background: rgba(60, 60, 60, 0.5);
+    margin-bottom: 15px;
+    padding: 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+  }
+  .social-icon, .task-icon {
+    font-size: 24px;
+    margin-right: 15px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #4CAF50;
+    border-radius: 50%;
+  }
+  .social-name, .task-name {
+    font-weight: bold;
+    flex-grow: 1;
+  }
+  .social-action, .task-action {
+    background: #4CAF50;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+  }
+  .social-action:hover, .task-action:hover {
+    background-color: #45a049;
+  }
+  .task-progress {
+    font-size: 14px;
+    color: #888;
+    margin-top: 5px;
+  }
+  .task-reward {
+    font-size: 14px;
+    color: #FFD700;
+    margin-top: 5px;
+  }
+  #energy-page, #referral-page {
+    color: #ffffff;
+  }
+  #energy-info {
+    background: rgba(60, 60, 60, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+  #energy-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+  }
+  .energy-action {
+    background: rgba(60, 60, 60, 0.5);
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .energy-action-name {
+    font-weight: bold;
+  }
+  .energy-action-button {
+    background: #4CAF50;
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+  }
+  .energy-action-button:hover {
+    background-color: #45a049;
+  }
+  #referral-link {
+    background: rgba(60, 60, 60, 0.5);
+    padding: 15px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    word-break: break-all;
+  }
+  #copy-link {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 10px;
+  }
+  #copy-link:hover {
+    background-color: #45a049;
+  }
+  #referral-stats {
+    background: rgba(60, 60, 60, 0.5);
+    padding: 20px;
+    border-radius: 10px;
+    margin-top: 20px;
+  }
+  .referral-stat {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .referral-stat-label {
+    font-weight: bold;
+  }
+  .referral-stat-value {
+    color: #4CAF50;
+  }
+  #connect-wallet {
+    background: linear-gradient(145deg, #4CAF50, #45a049);
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    outline: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  #connect-wallet:hover {
+    background: linear-gradient(145deg, #45a049, #4CAF50);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+  }
+  #connect-wallet:active {
+    transform: translateY(1px);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+  #connect-wallet-page {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(30, 30, 30, 0.95);
+    color: #ffffff;
+    padding: 20px;
+    overflow-y: auto;
+    z-index: 1000;
+  }
+  #connect-wallet-page h2 {
+    color: #4CAF50;
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .wallet-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 20px;
+  }
+  .wallet-option {
+    background: #4CAF50;
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  .wallet-option:hover {
+    background-color: #45a049;
+  }
+  #connect-wallet-page p {
+    text-align: center;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  @keyframes coinSpin {
+    0% { transform: scale(0) rotate(0deg); opacity: 1; }
+    100% { transform: scale(1.5) rotate(360deg); opacity: 0; }
+  }
+
+  .coin {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23F7931A"><path d="M11.5 12.5v-1h1c.3 0 .5-.2.5-.5s-.2-.5-.5-.5h-1v-1h1c.3 0 .5-.2.5-.5s-.2-.5-.5-.5h-2v6h2c.3 0 .5-.2.5-.5s-.2-.5-.5-.5h-1zm1 2h-2v1h2c.3 0 .5-.2.5-.5s-.2-.5-.5-.5zM12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8z"></path></svg>') no-repeat center center;
+    background-size: contain;
+    pointer-events: none;
+    animation: coinSpin 0.5s ease-out forwards;
+  }
+</style>
+</head>
+<body>
+<div id="game-container">
+  <div id="top-bar">
+    <div id="currency">
+      <span id="currency-amount">0</span>
+      <span id="currency-label">RTM</span>
+    </div>
+    <button id="connect-wallet">Connect Wallet</button>
+  </div>
+  <div id="stats-bar">
+    <div class="stat">
+      <div>Earn per tap</div>
+      <div class="stat-value" id="earn-per-tap">1</div>
+    </div>
+    <div class="stat">
+      <div>Next level at</div>
+      <div class="stat-value" id="next-level-at">5,000</div>
+    </div>
+    <div class="stat">
+      <div>Level</div>
+      <div class="stat-value" id="level-display">1/10</div>
+    </div>
+  </div>
+  <div id="level-bar">
+    <div id="level-progress"></div>
+  </div>
+  <div id="level-text">Level 1</div>
+  <div id="tap-area">
+    <img id="tap-image" src="<a href="https://ibb.co/vkbfcV5"><img src="https://i.ibb.co/SB2H65T/1716349302121.png" alt="1716349302121" border="0"></a>
+  </div>
+  <div id="energy-bar">
+    <div id="energy-progress"></div>
+    <div id="energy-icon"></div>
+    <div id="energy-text">500 / 500</div>
+  </div>
+  <div id="referral-bar">
+    <div id="referral-progress"></div>
+    <div id="referral-icon"></div>
+    <div id="referral-text">0 / 10</div>
+  </div>
+  <div id="claim-tokens-container" style="text-align: center; margin-top: 10px;">
+    <button id="claim-tokens-button" style="background: linear-gradient(145deg, #4CAF50, #45a049); color: white; border: none; padding: 10px 20px; border-radius: 20px; font-weight: bold; cursor: pointer;">Claim Tokens</button>
+  </div>
+  <div id="bottom-section">
+    <div id="bottom-menu">
+      <div class="menu-item" id="top-button">🏆</div>
+      <div class="menu-item" id="energy-button">⚡</div>
+      <div class="menu-item" id="rtm-button">ℹ️</div>
+      <div class="menu-item active" id="social-button">🌐</div>
+      <div class="menu-item" id="referral-button">👥</div>
+      <div class="menu-item" id="tasks-button">📅</div>
+    </div>
+  </div>
+  <div id="level-up">Level Up!</div>
+
+  <div id="rtm-info">
+    <div class="back-button">←</div>
+    <h2>RTM Token Information</h2>
+    <p><strong>What is RTM?</strong><br>
+    RTM (Rabbit Token Moon) is the in-game currency of Hamster Kombat. It's used for various purposes within the game ecosystem.</p>
+    <p><strong>How to Earn RTM:</strong><br>
+    - Tapping in the game<br>
+    - Completing achievements<br>
+    - Inviting friends through referrals<br>
+    - Participating in special events</p>
+    <p><strong>Uses of RTM:</strong><br>
+    - Upgrade your tapping power<br>
+    - Purchase special items and boosters<br>
+    - Trade with other players (coming soon)<br>
+    - Stake for additional benefits (coming soon)</p>
+    <p><strong>RTM Tokenomics:</strong><br>
+    - Total Supply: 1,000,000,000 RTM<br>
+    - Circulating Supply: Updated daily based on player activity<br>
+    - Distribution: 95% to players, 2% for development, 3% for marketing</p>
+    <p><strong>Future Plans:</strong><br>
+    We're working on integrating RTM with the TON blockchain for added security and tradability. Stay tuned for updates!</p>
+  </div>
+
+  <div id="top-players">
+    <div class="back-button">←</div>
+    <h2>Top Players</h2>
+    <ul id="top-players-list">
+      <!-- Top players will be dynamically added here -->
+    </ul>
+  </div>
+
+  <div id="social-media">
+  <div class="back-button">←</div>
+  <h2>Social Media</h2>
+  <ul id="social-media-list">
+    <li>
+      <div class="social-icon">📺</div>
+      <div class="social-name">YouTube</div>
+      <a href="https://m.youtube.com/@RabbitTheMoon/videos" class="social-action" target="_blank">Subscribe</a>
+    </li>
+    <li>
+      <div class="social-icon">📘</div>
+      <div class="social-name">Facebook</div>
+      <a href="https://www.facebook.com/profile.php?id=100091684060474&mibextid=ZbWKwL" class="social-action" target="_blank">Follow</a>
+    </li>
+    <li>
+      <div class="social-icon">📸</div>
+      <div class="social-name">Instagram</div>
+      <a href="https://instagram.com/rabbitthemoon2024/" class="social-action" target="_blank">Follow</a>
+    </li>
+    <li>
+      <div class="social-icon">✈️</div>
+      <div class="social-name">Telegram</div>
+      <a href="https://t.me/RabbitTheMoon" class="social-action" target="_blank">Join</a>
+    </li>
+    <li>
+      <div class="social-icon">🐦</div>
+      <div class="social-name">Twitter</div>
+      <a href="https://twitter.com/RabbitTheMoon" class="social-action" target="_blank">Follow</a>
+      </li>
+      <li>
+      <div class="social-icon">🪙</div>
+      <div class="social-name">Rabbit Faucet</div>
+      <a href="https://rabbitfaucet.site/" class="social-action" target="_blank">Follow</a>
+      </li>
+      <li>
+      <div class="social-icon">🛍</div>
+      <div class="social-name">Rabbit Store</div>
+      <a href="https://market-rabbit.company.site/" class="social-action" target="_blank">Follow</a>
+      </li>
+      <li>
+      <div class="social-icon">🌐</div>
+      <div class="social-name">Web</div>
+      <a href="https://rabbitthemoon.com" class="social-action" target="_blank">Follow</a>
+      </li>
+      <li>
+      <div class="social-icon">📈</div>
+      <div class="social-name">Rabbit Exchange</div>
+      <a href="https://rabbitexchange.site/exchange" class="social-action" target="_blank">Follow</a>
+      </li>
+      <li>
+        <div class="social-icon">🖼️</div>
+        <div class="social-name">NFT Marketplace</div>
+        <a href="https://launchpad.heymint.xyz/mint/rtmg" class="social-action">Buy NFT</a>
+      </li>
+    </ul>
+  </div>
+
+  <div id="daily-tasks">
+    <div class="back-button">←</div>
+    <h2>Daily Tasks</h2>
+    <ul id="daily-tasks-list">
+      <li>
+        <div class="task-icon">🖱️</div>
+        <div class="task-info">
+          <div class="task-name">Tap 1000 times</div>
+          <div class="task-progress">Progress: 0 / 1000</div>
+          <div class="task-reward">Reward: 500 RTM</div>
+        </div>
+        <button class="task-action">Claim</button>
+      </li>
+      <li>
+        <div class="task-icon">⏰</div>
+        <div class="task-info">
+          <div class="task-name">Play for 30 minutes</div>
+          <div class="task-progress">Progress: 0 / 30 min</div>
+          <div class="task-reward">Reward: 300 RTM</div>
+        </div>
+        <button class="task-action">Claim</button>
+      </li>
+      <li>
+        <div class="task-icon">🔋</div>
+        <div class="task-info">
+          <div class="task-name">Use all energy</div>
+          <div class="task-progress">Progress: 0 / 500</div>
+          <div class="task-reward">Reward: 200 RTM</div>
+        </div>
+        <button class="task-action">Claim</button>
+      </li>
+      <li>
+        <div class="task-icon">🆙</div>
+        <div class="task-info">
+          <div class="task-name">Level up once</div>
+          <div class="task-progress">Progress: 0 / 1</div>
+          <div class="task-reward">Reward: 1000 RTM</div>
+        </div>
+        <button class="task-action">Claim</button>
+      </li>
+      <li>
+        <div class="task-icon">👥</div>
+        <div class="task-info">
+          <div class="task-name">Invite a friend</div>
+          <div class="task-progress">Progress: 0 / 1</div>
+          <div class="task-reward">Reward: 500 RTM</div>
+        </div>
+        <button class="task-action">Claim</button>
+      </li>
+    </ul>
+  </div>
+
+  <div id="energy-page">
+    <div class="back-button">←</div>
+    <h2>Energy Management</h2>
+    <div id="energy-info">
+      <p>Current Energy: <span id="current-energy">500</span> / <span id="max-energy">500</span></p>
+      <p>Energy Recharge Rate: 0.5 energy per 2 seconds</p>
+    </div>
+    <div id="energy-actions">
+      <div class="energy-action">
+        <span class="energy-action-name">Watch Ad (+50 Energy)</span>
+        <button class="energy-action-button">Watch</button>
+      </div>
+      <div class="energy-action">
+        <span class="energy-action-name">Buy Small Energy Pack (+100 Energy)</span>
+        <button class="energy-action-button">10 RTM</button>
+      </div>
+      <div class="energy-action">
+        <span class="energy-action-name">Buy Medium Energy Pack (+250 Energy)</span>
+        <button class="energy-action-button">20 RTM</button>
+      </div>
+      <div class="energy-action">
+        <span class="energy-action-name">Buy Large Energy Pack (+500 Energy)</span>
+        <button class="energy-action-button">35 RTM</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="referral-page">
+  <div class="back-button">←</div>
+  <h2>Referral Program</h2>
+  <p>Share your unique link and earn rewards for each friend who joins!</p>
+    <div id="referral-link">
+    https://hamkombat.com/?ref=YourUniqueCode123
+  </div>
+     <button id="copy-link">Copy Link</button>
+    <div id="referral-stats">
+    <h3>Your Referral Stats</h3>
+    <div class="referral-stat">
+      <span class="referral-stat-label">Total Referrals:</span>
+      <span class="referral-stat-value" id="total-referrals">0</span>
+    </div>
+    <div class="referral-stat">
+      <span class="referral-stat-label">Active Referrals:</span>
+      <span class="referral-stat-value" id="active-referrals">0</span>
+    </div>
+    <div class="referral-stat">
+      <span class="referral-stat-label">Total Earnings:</span>
+      <span class="referral-stat-value" id="total-earnings">0 RTM</span>
+    </div>
+  </div>
+</div>
+  
+  <div id="connect-wallet-page">
+    <div class="back-button">←</div>
+    <h2>Connect Wallet</h2>
+    <div class="wallet-options">
+      <button class="wallet-option">MetaMask</button>
+      <button class="wallet-option">Trust Wallet</button>
+      <button class="wallet-option">Coinbase Wallet</button>
+      <button class="wallet-option">WalletConnect</button>
+    </div>
+    <p>Connect your wallet to start earning and managing your RTM tokens!</p>
+  </div>
+</div>
+
+<script>
+
+let totalReferrals = 5;
+let activeReferrals = 3;
+let totalEarnings = 1500
+
+let currency = 0;
+let levelProgress = 0;
+let currentLevel = 1;
+let earnPerTap = 1;
+let nextLevelAt = 5000;
+let maxLevel = 10;
+let energyValue = 500;
+let maxEnergy = 500;
+let referralProgress = 0;
+let maxReferralProgress = 10;
+
+const currencyDisplay = document.getElementById('currency-amount');
+const levelProgressBar = document.getElementById('level-progress');
+const levelText = document.getElementById('level-text');
+const levelDisplay = document.getElementById('level-display');
+const earnPerTapDisplay = document.getElementById('earn-per-tap');
+const nextLevelAtDisplay = document.getElementById('next-level-at');
+const tapArea = document.getElementById('tap-area');
+const levelUpNotification = document.getElementById('level-up');
+const energyBar = document.getElementById('energy-progress');
+const energyText = document.getElementById('energy-text');
+const referralBar = document.getElementById('referral-progress');
+const referralText = document.getElementById('referral-text');
+
+function saveRTMPoints() {
+  localStorage.setItem('rtmPoints', currency.toString());
+}
+
+function loadRTMPoints() {
+  const savedPoints = localStorage.getItem('rtmPoints');
+  if (savedPoints !== null) {
+    currency = parseInt(savedPoints, 10);
+    updateCurrency(0); // This will update the display
+  }
+}
+
+function updateCurrency(amount) {
+  currency += amount;
+  currencyDisplay.textContent = Math.floor(currency);
+  saveRTMPoints(); // Save points after each update
+  updateTopPlayers(); // Update top players when currency changes
+}
+
+function getCurrentPlayerData() {
+  return {
+    name: "You",
+    score: Math.floor(currency)
+  };
+}
+
+function getTopPlayers() {
+  let players = [
+    { name: "CryptoKing", score: 1000000 },
+    { name: "BlockchainQueen", score: 950000 },
+    { name: "SatoshisFriend", score: 900000 },
+    { name: "HODLer4Life", score: 850000 },
+    { name: "TokenMaster", score: 800000 }
+  ];
+  
+  players.push(getCurrentPlayerData());
+  players.sort((a, b) => b.score - a.score);
+  return players.slice(0, 25);
+}
+
+function updateTopPlayers() {
+  const topPlayersList = document.getElementById('top-players-list');
+  if (topPlayersList) {
+    const players = getTopPlayers();
+    topPlayersList.innerHTML = '';
+    players.forEach((player, index) => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <span class="player-rank">#${index + 1}</span>
+        <span class="player-name">${player.name}</span>
+        <span class="player-score">${player.score.toLocaleString()} RTM</span>
+      `;
+      topPlayersList.appendChild(li);
+    });
+  }
+}
+
+function updateLevelProgress(amount) {
+  levelProgress += amount;
+  const progressPercentage = (levelProgress / nextLevelAt) * 100;
+  levelProgressBar.style.width = progressPercentage + '%';
+
+  if (levelProgress >= nextLevelAt) {
+    levelUp();
+  }
+}
+
+function resetLevelProgress() {
+  levelProgress = 0;
+  levelProgressBar.style.width = '0%';
+}
+
+function levelUp() {
+  if (currentLevel < maxLevel) {
+    currentLevel++;
+    levelProgress = 0;
+    earnPerTap *= 1.2;
+    nextLevelAt *= 1.5;
+    
+    levelText.textContent = `Level ${currentLevel}`;
+    levelDisplay.textContent = `${currentLevel}/${maxLevel}`;
+    earnPerTapDisplay.textContent = earnPerTap.toFixed(2);
+    nextLevelAtDisplay.textContent = nextLevelAt.toFixed(0);
+    
+    showLevelUpNotification();
+  }
+}
+
+function showLevelUpNotification() {
+  levelUpNotification.style.display = 'block';
+  setTimeout(() => {
+    levelUpNotification.style.display = 'none';
+  }, 2000);
+}
+
+function updateEnergy() {
+  energyValue = Math.min(energyValue, maxEnergy);
+  const energyPercentage = (energyValue / maxEnergy) * 100;
+  energyBar.style.width = energyPercentage + '%';
+  energyText.textContent = `${Math.floor(energyValue)} / ${maxEnergy}`;
+  
+  energyBar.style.transition = 'width 0.1s linear';
+}
+
+function updateReferralProgress() {
+  const referralPercentage = (referralProgress / maxReferralProgress) * 100;
+  referralBar.style.width = referralPercentage + '%';
+  referralText.textContent = `${referralProgress} / ${maxReferralProgress}`;
+}
+
+function displayTopPlayers() {
+  const topPlayersPage = document.getElementById('top-players');
+  topPlayersPage.style.display = 'block';
+  updateTopPlayers();
+}
+
+function createCoin(x, y) {
+  const coin = document.createElement('div');
+  coin.className = 'coin';
+  coin.style.left = `${x}px`;
+  coin.style.top = `${y}px`;
+  tapArea.appendChild(coin);
+  setTimeout(() => {
+    coin.remove();
+  }, 500);
+}
+
+function animateTapArea() {
+  tapArea.style.transform = 'scale(0.95)';
+  setTimeout(() => {
+    tapArea.style.transform = 'scale(1)';
+  }, 100);
+}
+
+tapArea.addEventListener('click', (event) => {
+  if (energyValue > 0) {
+    updateCurrency(earnPerTap);
+    updateLevelProgress(earnPerTap);
+    energyValue = Math.max(0, energyValue - 1); // Consume 1 energy per tap
+    updateEnergy();
+
+    // Create coin animation
+    const rect = tapArea.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+    createCoin(x, y);
+
+    // Add tap area animation
+    animateTapArea();
+  }
+});
+
+// Slow down energy regeneration
+setInterval(() => {
+  if (energyValue < maxEnergy) {
+    energyValue = Math.min(maxEnergy, energyValue + 0.1); // Regenerate 0.1 energy every 2 seconds
+    updateEnergy();
+  }
+}, 2000); // Run every 2 seconds
+
+loadRTMPoints();
+updateCurrency(0);
+updateLevelProgress(0);
+updateEnergy();
+updateReferralProgress();
+
+const rtmButton = document.getElementById('rtm-button');
+const backButtons = document.querySelectorAll('.back-button');
+
+rtmButton.addEventListener('click', () => {
+  document.getElementById('rtm-info').style.display = 'block';
+});
+
+backButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    button.parentElement.style.display = 'none';
+  });
+});
+
+const topButton = document.getElementById('top-button');
+
+topButton.addEventListener('click', displayTopPlayers);
+
+const socialButton = document.getElementById('social-button');
+const socialMediaPage = document.getElementById('social-media');
+
+socialButton.addEventListener('click', () => {
+  socialMediaPage.style.display = 'block';
+});
+
+const tasksButton = document.getElementById('tasks-button');
+const dailyTasksPage = document.getElementById('daily-tasks');
+
+tasksButton.addEventListener('click', () => {
+  dailyTasksPage.style.display = 'block';
+});
+
+const energyButton = document.getElementById('energy-button');
+const energyPage = document.getElementById('energy-page');
+
+energyButton.addEventListener('click', () => {
+  energyPage.style.display = 'block';
+  document.getElementById('current-energy').textContent = energyValue;
+  document.getElementById('max-energy').textContent = maxEnergy;
+});
+
+const referralButton = document.getElementById('referral-button');
+const referralPage = document.getElementById('referral-page');
+const copyLinkButton = document.getElementById('copy-link');
+
+referralButton.addEventListener('click', () => {
+  referralPage.style.display = 'block';
+});
+
+copyLinkButton.addEventListener('click', () => {
+  const referralLink = document.getElementById('referral-link').textContent;
+  navigator.clipboard.writeText(referralLink.trim()).then(() => {
+    alert('Referral link copied to clipboard!');
+  });
+});
+
+const connectWalletButton = document.getElementById('connect-wallet');
+const connectWalletPage = document.getElementById('connect-wallet-page');
+
+connectWalletButton.addEventListener('click', () => {
+  connectWalletPage.style.display = 'block';
+});
+
+backButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    button.parentElement.style.display = 'none';
+  });
+});
+
+const menuItems = document.querySelectorAll('.menu-item');
+menuItems.forEach(item => {
+  item.addEventListener('mouseover', () => {
+    item.style.transform = 'scale(1.1)';
+  });
+  item.addEventListener('mouseout', () => {
+    item.style.transform = 'scale(1)';
+  });
+});
+
+const claimTokensButton = document.getElementById('claim-tokens-button');
+const minWithdrawalLimits = [10000, 50000, 100000, 250000, 500000, 1000000, 1500000, 2000000, 2000000, 2000000];
+
+claimTokensButton.addEventListener('click', () => {
+  const minWithdrawal = minWithdrawalLimits[currentLevel - 1] || minWithdrawalLimits[minWithdrawalLimits.length - 1];
+  
+  if (currency >= minWithdrawal) {
+    const amountToWithdraw = Math.floor(currency);
+    updateCurrency(-amountToWithdraw);
+  } else {
+    alert(`You need at least ${minWithdrawal} RTM tokens to claim at your current level.`);
+
+document.getElementById('total-referrals').textContent = totalReferrals;
+document.getElementById('active-referrals').textContent = activeReferrals;
+document.getElementById('total-earnings').textContent = totalEarnings + ' RTM';
+
+const copyLinkButton = document.getElementById('copy-link');
+copyLinkButton.addEventListener('click', () => {
+  const referralLink = document.getElementById('referral-link').textContent;
+  navigator.clipboard.writeText(referralLink.trim()).then(() => {
+    alert('Referral link copied to clipboard!');
+  }
+});
+</script>
+</body>
+</html>
